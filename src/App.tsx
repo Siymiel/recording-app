@@ -23,9 +23,16 @@ const App: React.FC = () => {
   const [progress, setProgress] = useState<number>(0);
   const [timeRemaining, setTimeRemaining] = useState<number>(20);
   const [textAreaValue, setTextAreaValue] = useState<string>("");
-  const [mediaStartTime, setMediaStartTime] = useState<number | null>(null);
-  const [lastStoppedTime, setLastStoppedTime] = useState<number>(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const resetMediaState = () => {
+    setProgress(0);
+    setTimeRemaining(20);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
 
   const handleStop = () => {
     if (isPlaying) {
@@ -35,10 +42,8 @@ const App: React.FC = () => {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
-      setLastStoppedTime(Date.now() - (mediaStartTime || 0));
-      setProgress(0);
-      setTimeRemaining(20);
     }
+    resetMediaState();
     setActiveButton(null);
   };
 
@@ -46,11 +51,10 @@ const App: React.FC = () => {
     if (label === "Stop") {
       handleStop();
     } else {
-      if (!isPlaying) {
-        setActiveButton(label);
-        setIsPlaying(true);
-        mockMediaAction();
-      }
+      resetMediaState();
+      setActiveButton(label);
+      setIsPlaying(true);
+      mockMediaAction();
     }
   };
 
@@ -58,8 +62,7 @@ const App: React.FC = () => {
     const totalDuration = 20 * 1000;
     const intervalDuration = 100;
 
-    const startTime = Date.now() - lastStoppedTime;
-    setMediaStartTime(startTime);
+    const startTime = Date.now();
 
     const progressStartTime = startTime;
 
@@ -77,11 +80,9 @@ const App: React.FC = () => {
 
       if (mediaElapsedTime >= totalDuration) {
         clearInterval(progressInterval);
-        setProgress(0);
-        setTimeRemaining(20);
+        resetMediaState();
         setIsPlaying(false);
         setActiveButton(null);
-        setLastStoppedTime(0);
       }
     }, intervalDuration);
 
@@ -126,16 +127,11 @@ const App: React.FC = () => {
         SAY THE VOCABULARY WORDS
       </Typography>
 
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        mt={2}
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" mt={2}>
         <img
           src={recordingImage}
           alt="Person recording audio for vocabulary practice"
-          style={{ maxWidth: "100%", height: '350px' }}
+          style={{ maxWidth: "100%", height: "350px" }}
         />
       </Box>
 
@@ -156,6 +152,7 @@ const App: React.FC = () => {
             variant="contained"
             symbol={<StopIcon sx={{ fontSize: 30, color: "inherit" }} />}
             onClick={() => handleButtonClick("Stop")}
+            aria-label="Stop recording"
           />
         </Grid>
         <Grid item>
@@ -167,6 +164,7 @@ const App: React.FC = () => {
             isactive={activeButton === "Record"}
             variant="contained"
             onClick={() => handleButtonClick("Record")}
+            aria-label="Start recording"
           />
         </Grid>
         <Grid item>
@@ -178,6 +176,7 @@ const App: React.FC = () => {
             isactive={activeButton === "Review"}
             variant="contained"
             onClick={() => handleButtonClick("Review")}
+            aria-label="Review your recording"
           />
         </Grid>
       </Grid>
