@@ -7,12 +7,13 @@ import {
   RadioGroupComponent,
 } from "./components";
 
-import { Grid, Typography } from "@mui/material";
+import { Grid, Typography, Box } from "@mui/material";
 import StopIcon from "@mui/icons-material/Stop";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import CircleIcon from "@mui/icons-material/Circle";
-
 import { toast } from "react-hot-toast";
+
+import recordingImage from "./assets/recording-image.jpg";
 import "./App.css";
 
 const App: React.FC = () => {
@@ -20,7 +21,7 @@ const App: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [finalAnswer, setFinalAnswer] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
-  const [timeRemaining, setTimeRemaining] = useState<number>(5);
+  const [timeRemaining, setTimeRemaining] = useState<number>(20);
   const [textAreaValue, setTextAreaValue] = useState<string>("");
   const [mediaStartTime, setMediaStartTime] = useState<number | null>(null);
   const [lastStoppedTime, setLastStoppedTime] = useState<number>(0);
@@ -36,7 +37,7 @@ const App: React.FC = () => {
       }
       setLastStoppedTime(Date.now() - (mediaStartTime || 0));
       setProgress(0);
-      setTimeRemaining(5);
+      setTimeRemaining(20);
     }
     setActiveButton(null);
   };
@@ -54,7 +55,7 @@ const App: React.FC = () => {
   };
 
   const mockMediaAction = () => {
-    const totalDuration = 5 * 1000;
+    const totalDuration = 20 * 1000;
     const intervalDuration = 100;
 
     const startTime = Date.now() - lastStoppedTime;
@@ -77,7 +78,7 @@ const App: React.FC = () => {
       if (mediaElapsedTime >= totalDuration) {
         clearInterval(progressInterval);
         setProgress(0);
-        setTimeRemaining(5);
+        setTimeRemaining(20);
         setIsPlaying(false);
         setActiveButton(null);
         setLastStoppedTime(0);
@@ -122,42 +123,63 @@ const App: React.FC = () => {
   return (
     <div className="container">
       <Typography variant="h4" align="center" gutterBottom>
-        Say The Vocabulary Words.
+        SAY THE VOCABULARY WORDS
       </Typography>
+
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        mt={2}
+      >
+        <img
+          src={recordingImage}
+          alt="Person recording audio for vocabulary practice"
+          style={{ maxWidth: "100%", height: '350px' }}
+        />
+      </Box>
 
       <Grid
         container
-        justifyContent="space-between"
+        direction={{ xs: "column", sm: "row" }}
+        justifyContent="center"
         alignItems="center"
+        spacing={2}
         style={{ marginTop: "20px" }}
       >
-        <Button
-          label="Stop"
-          color="#C62828"
-          bordercolor="#FA8072"
-          isactive={activeButton === "Stop"}
-          variant="contained"
-          symbol={<StopIcon sx={{ fontSize: 30, color: "inherit" }} />}
-          onClick={() => handleButtonClick("Stop")}
-        />
-        <Button
-          label="Record"
-          color="#009688"
-          bordercolor="#20B2AA"
-          symbol={<CircleIcon sx={{ fontSize: 25, color: "inherit" }} />}
-          isactive={activeButton === "Record"}
-          variant="contained"
-          onClick={() => handleButtonClick("Record")}
-        />
-        <Button
-          label="Review your recording"
-          color="#7B1FA2"
-          bordercolor="#DDA0DD"
-          symbol={<PlayArrowIcon sx={{ fontSize: 30, color: "inherit" }} />}
-          isactive={activeButton === "Review"}
-          variant="contained"
-          onClick={() => handleButtonClick("Review")}
-        />
+        <Grid item>
+          <Button
+            label="Stop"
+            color="#C62828"
+            bordercolor="#FA8072"
+            isactive={activeButton === "Stop"}
+            variant="contained"
+            symbol={<StopIcon sx={{ fontSize: 30, color: "inherit" }} />}
+            onClick={() => handleButtonClick("Stop")}
+          />
+        </Grid>
+        <Grid item>
+          <Button
+            label="Record"
+            color="#009688"
+            bordercolor="#20B2AA"
+            symbol={<CircleIcon sx={{ fontSize: 25, color: "inherit" }} />}
+            isactive={activeButton === "Record"}
+            variant="contained"
+            onClick={() => handleButtonClick("Record")}
+          />
+        </Grid>
+        <Grid item>
+          <Button
+            label="Review your recording"
+            color="#7B1FA2"
+            bordercolor="#DDA0DD"
+            symbol={<PlayArrowIcon sx={{ fontSize: 30, color: "inherit" }} />}
+            isactive={activeButton === "Review"}
+            variant="contained"
+            onClick={() => handleButtonClick("Review")}
+          />
+        </Grid>
       </Grid>
 
       <ProgressBar
