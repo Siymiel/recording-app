@@ -1,20 +1,21 @@
 import React from 'react';
-import { Button, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 
 import { SubmitButtonProps } from './types';
+import { StyledSubmitButton } from './StyledSubmitButton';
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({ isEnabled, onClick }) => {
   return (
-    <Grid container justifyContent="center" alignItems="center" mt={2}>
+    <Grid container justifyContent="center" alignItems="center" mt={5}>
       <Grid item>
-        <Button
+        <StyledSubmitButton
           variant="contained"
           color="info"
           disabled={!isEnabled}
           onClick={onClick}
         >
           Submit
-        </Button>
+        </StyledSubmitButton>
       </Grid>
     </Grid>
   );

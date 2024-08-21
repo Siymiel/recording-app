@@ -134,8 +134,8 @@ const App: React.FC = () => {
         <Button
           label="Stop"
           color="#C62828"
-          borderColor="#FA8072"
-          isActive={activeButton === "Stop"}
+          bordercolor="#FA8072"
+          isactive={activeButton === "Stop"}
           variant="contained"
           symbol={<StopIcon sx={{ fontSize: 30, color: "inherit" }} />}
           onClick={() => handleButtonClick("Stop")}
@@ -143,18 +143,18 @@ const App: React.FC = () => {
         <Button
           label="Record"
           color="#009688"
-          borderColor="#20B2AA"
+          bordercolor="#20B2AA"
           symbol={<CircleIcon sx={{ fontSize: 25, color: "inherit" }} />}
-          isActive={activeButton === "Record"}
+          isactive={activeButton === "Record"}
           variant="contained"
           onClick={() => handleButtonClick("Record")}
         />
         <Button
           label="Review your recording"
           color="#7B1FA2"
-           borderColor="#DDA0DD"
+          bordercolor="#DDA0DD"
           symbol={<PlayArrowIcon sx={{ fontSize: 30, color: "inherit" }} />}
-          isActive={activeButton === "Review"}
+          isactive={activeButton === "Review"}
           variant="contained"
           onClick={() => handleButtonClick("Review")}
         />

@@ -14,7 +14,7 @@ const RadioGroupComponent: React.FC<RadioGroupProps> = ({
   onChange,
 }) => {
   return (
-    <FormControl component="fieldset" style={{ marginTop: '20px', width: '300px' }}>
+    <FormControl component="fieldset" style={{ marginTop: '40px', width: '300px' }}>
       <FormLabel component="legend">Is this your final answer?</FormLabel>
       <Box display="flex" justifyContent="center">
         <RadioGroup
