@@ -7,13 +7,12 @@ import {
   RadioGroupComponent,
 } from "./components";
 
-import { Grid, Typography, Box } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import StopIcon from "@mui/icons-material/Stop";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import CircleIcon from "@mui/icons-material/Circle";
 import { toast } from "react-hot-toast";
 
-import recordingImage from "./assets/recording-image.jpg";
 import "./App.css";
 
 const App: React.FC = () => {
@@ -123,17 +122,21 @@ const App: React.FC = () => {
 
   return (
     <div className="container">
-      <Typography variant="h4" align="center" gutterBottom>
+      <Typography
+        align="center"
+        gutterBottom
+        sx={{
+          fontSize: {
+            xs: "1.50rem",
+            sm: "0.65rem",
+            md: "0.85rem",
+            lg: "1.0rem",
+            xl: "1.5rem",
+          },
+        }}
+      >
         SAY THE VOCABULARY WORDS
       </Typography>
-
-      <Box display="flex" justifyContent="center" alignItems="center" mt={2}>
-        <img
-          src={recordingImage}
-          alt="Person recording audio for vocabulary practice"
-          style={{ maxWidth: "100%", height: "350px" }}
-        />
-      </Box>
 
       <Grid
         container

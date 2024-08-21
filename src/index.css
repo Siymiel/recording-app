@@ -8,13 +8,21 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  background:  linear-gradient(135deg, #6b21a8, #b5179e, #f72585);
+  background: linear-gradient(135deg, rgba(107, 33, 168, 0.7), rgba(181, 23, 158, 0.7), rgba(247, 37, 133, 0.7)), url('./assets/students.jpg') no-repeat center center fixed;
+  background-size: cover;
 }
 
 body {
   margin: 0;
-  display: grid;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
+
+h4 {
+  font-size: calc(1.5rem + 1vw);
+}
+
