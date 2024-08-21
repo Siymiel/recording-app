@@ -53,18 +53,37 @@ A React application that simulates a media recording and review process, complet
 ### Project Structure
 
 - `src/`
-  - `assets/`: Contains static assets like images.
-  - `components/`:
-    - `Button.tsx`: Custom button component with different states for Stop, Record, and Review actions.
-    - `TextArea.tsx`: Text area component for user input.
-    - `RadioGroupComponent.tsx`: Radio buttons for final answer selection.
-    - `SubmitButton.tsx`: Submit button component that triggers the submission process.
-    - `ProgressBar.tsx`: Progress bar component that visually represents the recording/review progress and countdown.
-  - `App.tsx`: Main application component that integrates all features and manages the app's state.
-  - `index.tsx`: Application entry point.
-  - `App.css`: Custom styles for the app.
-- `public/`: Static assets accessible to the app.
-- `vite.config.ts`: Vite configuration file for project setup.
+
+```bash
+├── App.css
+├── App.tsx
+├── assets
+│   ├── react.svg
+│   └── recording-image.jpg
+├── components
+│   ├── Button
+│   │   ├── Button.tsx
+│   │   ├── StyledButton.ts
+│   │   ├── StyledTypography.ts
+│   │   ├── index.ts
+│   │   └── types.ts
+│   ├── ProgressBar.tsx
+│   ├── RadioGroup.tsx
+│   ├── SubmitButton
+│   │   ├── StyledSubmitButton.ts
+│   │   ├── SubmitButton.tsx
+│   │   ├── index.ts
+│   │   └── types.ts
+│   ├── TextArea.tsx
+│   ├── index.ts
+│   └── types.ts
+├── index.css
+├── main.tsx
+├── theme
+│   ├── index.ts
+│   └── theme.ts
+└── vite-env.d.ts
+```
 
 ### Usage
 
