@@ -1,35 +1,180 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useRef, ChangeEvent } from "react";
+import {
+  Button,
+  TextArea,
+  SubmitButton,
+  ProgressBar,
+  RadioGroupComponent,
+} from "./components";
 
-function App() {
-  const [count, setCount] = useState(0)
+import { Grid, Typography } from "@mui/material";
+import StopIcon from "@mui/icons-material/Stop";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import CircleIcon from "@mui/icons-material/Circle";
+
+import { toast } from "react-hot-toast";
+import "./App.css";
+
+const App: React.FC = () => {
+  const [activeButton, setActiveButton] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [finalAnswer, setFinalAnswer] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [timeRemaining, setTimeRemaining] = useState<number>(5);
+  const [textAreaValue, setTextAreaValue] = useState<string>("");
+  const [mediaStartTime, setMediaStartTime] = useState<number | null>(null);
+  const [lastStoppedTime, setLastStoppedTime] = useState<number>(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleStop = () => {
+    if (isPlaying) {
+      (document.getElementById("textarea") as HTMLTextAreaElement).focus();
+      setIsPlaying(false);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      setLastStoppedTime(Date.now() - (mediaStartTime || 0));
+      setProgress(0);
+      setTimeRemaining(5);
+    }
+    setActiveButton(null);
+  };
+
+  const handleButtonClick = (label: string) => {
+    if (label === "Stop") {
+      handleStop();
+    } else {
+      if (!isPlaying) {
+        setActiveButton(label);
+        setIsPlaying(true);
+        mockMediaAction();
+      }
+    }
+  };
+
+  const mockMediaAction = () => {
+    const totalDuration = 5 * 1000;
+    const intervalDuration = 100;
+
+    const startTime = Date.now() - lastStoppedTime;
+    setMediaStartTime(startTime);
+
+    const progressStartTime = startTime;
+
+    const progressInterval = setInterval(() => {
+      const currentTime = Date.now();
+      const mediaElapsedTime = currentTime - progressStartTime;
+      const newProgress = (mediaElapsedTime / totalDuration) * 100;
+      const remainingTime = Math.max(
+        0,
+        (totalDuration - mediaElapsedTime) / 1000
+      );
+
+      setProgress(newProgress);
+      setTimeRemaining(remainingTime);
+
+      if (mediaElapsedTime >= totalDuration) {
+        clearInterval(progressInterval);
+        setProgress(0);
+        setTimeRemaining(5);
+        setIsPlaying(false);
+        setActiveButton(null);
+        setLastStoppedTime(0);
+      }
+    }, intervalDuration);
+
+    intervalRef.current = progressInterval;
+  };
+
+  const handleRadioChange = (
+    _event: ChangeEvent<HTMLInputElement>,
+    value: string
+  ) => {
+    setFinalAnswer(value === "true");
+  };
+
+  const handleSubmit = () => {
+    console.log(textAreaValue);
+    toast.success("Answer submitted!");
+
+    setTextAreaValue("");
+    setFinalAnswer(false);
+  };
+
+  const formatTime = (seconds: number) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+    const millisec = Math.floor((seconds - Math.floor(seconds)) * 100);
+
+    if (hrs > 0) {
+      return `${hrs}:${mins < 10 ? "0" : ""}${mins}:${
+        secs < 10 ? "0" : ""
+      }${secs}:${millisec < 10 ? "0" : ""}${millisec}`;
+    } else {
+      return `${mins < 10 ? "0" : ""}${mins}:${secs < 10 ? "0" : ""}${secs}:${
+        millisec < 10 ? "0" : ""
+      }${millisec}`;
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="container">
+      <Typography variant="h4" align="center" gutterBottom>
+        Say The Vocabulary Words.
+      </Typography>
 
-export default App
+      <Grid
+        container
+        justifyContent="space-between"
+        alignItems="center"
+        style={{ marginTop: "20px" }}
+      >
+        <Button
+          label="Stop"
+          color="#C62828"
+          borderColor="#FA8072"
+          isActive={activeButton === "Stop"}
+          variant="contained"
+          symbol={<StopIcon sx={{ fontSize: 30, color: "inherit" }} />}
+          onClick={() => handleButtonClick("Stop")}
+        />
+        <Button
+          label="Record"
+          color="#009688"
+          borderColor="#20B2AA"
+          symbol={<CircleIcon sx={{ fontSize: 25, color: "inherit" }} />}
+          isActive={activeButton === "Record"}
+          variant="contained"
+          onClick={() => handleButtonClick("Record")}
+        />
+        <Button
+          label="Review your recording"
+          color="#7B1FA2"
+           borderColor="#DDA0DD"
+          symbol={<PlayArrowIcon sx={{ fontSize: 30, color: "inherit" }} />}
+          isActive={activeButton === "Review"}
+          variant="contained"
+          onClick={() => handleButtonClick("Review")}
+        />
+      </Grid>
+
+      <ProgressBar
+        progress={progress}
+        timeRemaining={formatTime(timeRemaining)}
+      />
+      <TextArea
+        value={textAreaValue}
+        onChange={(e) => setTextAreaValue(e.target.value)}
+      />
+      <RadioGroupComponent
+        selectedValue={finalAnswer ? "true" : "false"}
+        onChange={handleRadioChange}
+      />
+      <SubmitButton isEnabled={finalAnswer} onClick={handleSubmit} />
+    </div>
+  );
+};
+
+export default App;
