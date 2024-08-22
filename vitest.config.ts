@@ -15,7 +15,7 @@ export default defineConfig({
         alias: [
             {
                 find: 'test-utils',
-                replacement: `${__dirname}/tests/test-utils.tsx`,
+                replacement: `./src/tests/test-utils.tsx`,
             }
         ],
         exclude: ['node_modules'],

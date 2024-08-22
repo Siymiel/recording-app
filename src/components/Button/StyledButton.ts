@@ -1,7 +1,7 @@
 import { Button as MuiButton, styled } from "@mui/material";
 
 export const StyledButton = styled(MuiButton)<{
-  isactive?: boolean;
+  isactive?: string;
   bordercolor?: string;
 }>(({ isactive, bordercolor }) => ({
   borderRadius: "50%",

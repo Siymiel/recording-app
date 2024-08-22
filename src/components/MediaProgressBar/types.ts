@@ -5,3 +5,5 @@ export interface MediProgressBarProps {
     isPlaying: boolean;
     onCompletion: () => void;
   }
+
+export { ButtonLabels };

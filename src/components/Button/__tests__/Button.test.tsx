@@ -8,7 +8,7 @@ describe('Button Component', () => {
         label="Click Me"
         symbol="C"
         color="green"
-        isactive={'true'}
+        isactive={true}
         onClick={() => {}}
         bordercolor="yellow"
         variant="contained"

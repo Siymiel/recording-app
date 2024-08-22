@@ -1,7 +1,7 @@
 export interface ButtonProps {
     label: string;
     color: string;
-    isactive: string;
+    isactive: boolean;
     symbol: React.ReactNode;
     onClick: () => void;
     variant: "contained";

@@ -29,6 +29,7 @@ const MediaControlButtons: React.FC<MediaControlButtonsProps> = ({
           symbol={<StopIcon sx={{ fontSize: 30, color: "inherit" }} />}
           onClick={() => onButtonClick(ButtonLabels.Stop)}
           aria-label="Stop recording"
+          data-testid="Stop"
         />
       </Grid>
       <Grid item>

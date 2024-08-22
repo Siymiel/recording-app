@@ -27,7 +27,7 @@ const Button: React.FC<ButtonProps> = ({ label, symbol, color, isactive, onClick
     >
       <StyledButton
         onClick={onClick}
-        isactive={isactive}
+        isactive={isactive ? "true" : "false"}
         variant="contained"
         sx={{ backgroundColor: color }}
         bordercolor={bordercolor}
@@ -35,7 +35,7 @@ const Button: React.FC<ButtonProps> = ({ label, symbol, color, isactive, onClick
         {symbol}
       </StyledButton>
       <StyledTypography
-        isactive={isactive}
+        isactive={isactive ? "true" : "false"}
         hovercolor={bordercolor}
       >
         {label}
