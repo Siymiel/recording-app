@@ -1,66 +1,93 @@
 import React, { useState, useRef, ChangeEvent } from "react";
 import {
-  Button,
   TextArea,
   SubmitButton,
-  ProgressBar,
   RadioGroupComponent,
+  MediaControlButtons, 
+  MediaProgressBar
 } from "./components";
 
-import { Grid, Typography } from "@mui/material";
-import StopIcon from "@mui/icons-material/Stop";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import CircleIcon from "@mui/icons-material/Circle";
+import { Typography } from "@mui/material";
 import { toast } from "react-hot-toast";
+
+import { MediaActionState, ButtonLabels } from "./types";
 
 import "./App.css";
 
+
+const initialState: MediaActionState = {
+  activeButton: null,
+  isPlaying: false,
+  finalAnswer: false,
+  progress: 0,
+  timeRemaining: 20,
+  textAreaValue: "",
+};
+
 const App: React.FC = () => {
-  const [activeButton, setActiveButton] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [finalAnswer, setFinalAnswer] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number>(0);
-  const [timeRemaining, setTimeRemaining] = useState<number>(20);
-  const [textAreaValue, setTextAreaValue] = useState<string>("");
+  const [state, setState] = useState<MediaActionState>(initialState);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const resetMediaState = () => {
-    setProgress(0);
-    setTimeRemaining(20);
+  const resetMediaState = (): void => {
+    setState((prevState) => ({
+      ...prevState,
+      progress: 0,
+      timeRemaining: 20,
+    }));
+
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
   };
 
-  const handleStop = () => {
-    if (isPlaying) {
+  const handleStop = (): void => {
+    if (state.isPlaying) {
       (document.getElementById("textarea") as HTMLTextAreaElement).focus();
-      setIsPlaying(false);
+      setState((prevState) => ({
+        ...prevState,
+        isPlaying: false,
+      }));
+
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
     }
     resetMediaState();
-    setActiveButton(null);
-  };
+    setState((prevState) => ({
+      ...prevState,
+      activeButton: null,
+    }));
 
-  const handleButtonClick = (label: string) => {
-    if (label === "Stop") {
-      handleStop();
-    } else {
-      resetMediaState();
-      setActiveButton(label);
-      setIsPlaying(true);
-      mockMediaAction();
+    if (state.isPlaying === true) {
+      toast("Recording/Review stopped.", { icon: '⚠️' });
     }
   };
 
-  const mockMediaAction = () => {
+  const handleButtonClick = (label: ButtonLabels): void => {
+    if (label === ButtonLabels.Stop) {
+      handleStop();
+    } else {
+      resetMediaState();
+      setState((prevState) => ({
+        ...prevState,
+        activeButton: label,
+        isPlaying: true,
+      }));
+      mockMediaAction(label);
+
+      if (label === ButtonLabels.Record) {
+        toast("Recording started!", { icon: "🎙️" });
+      } else if (label === ButtonLabels.Review) {
+        toast("Review started!", { icon: "🎧" });
+      }
+    }
+  };
+
+  const mockMediaAction = (label: ButtonLabels): void => {
     const totalDuration = 20 * 1000;
     const intervalDuration = 100;
-
     const startTime = Date.now();
 
     const progressStartTime = startTime;
@@ -74,50 +101,63 @@ const App: React.FC = () => {
         (totalDuration - mediaElapsedTime) / 1000
       );
 
-      setProgress(newProgress);
-      setTimeRemaining(remainingTime);
+      setState((prevState) => ({
+        ...prevState,
+        progress: newProgress,
+        timeRemaining: remainingTime,
+      }));
 
       if (mediaElapsedTime >= totalDuration) {
         clearInterval(progressInterval);
         resetMediaState();
-        setIsPlaying(false);
-        setActiveButton(null);
+        setState((prevState) => ({
+          ...prevState,
+          isPlaying: false,
+          activeButton: null,
+        }));
+
+        if (label === ButtonLabels.Record) {
+          toast.success("Time's up! Recording complete.");
+        } else if (label === ButtonLabels.Review) {
+          toast.success("Time's up! Review complete.");
+        }
       }
     }, intervalDuration);
 
     intervalRef.current = progressInterval;
   };
 
+  const handleProgressCompletion = (): void => {
+    setState((prevState) => ({
+      ...prevState,
+      isPlaying: false,
+      activeButton: null,
+    }));
+  };
+
   const handleRadioChange = (
     _event: ChangeEvent<HTMLInputElement>,
     value: string
-  ) => {
-    setFinalAnswer(value === "true");
+  ): void => {
+    if (value === "true" && !state.textAreaValue.trim()) {
+      (document.getElementById("textarea") as HTMLTextAreaElement).focus();
+      toast.error("Please enter a response to proceed!");
+    } else {
+      setState((prevState) => ({
+        ...prevState,
+        finalAnswer: value === "true",
+      }));
+    }
   };
 
-  const handleSubmit = () => {
-    console.log(textAreaValue);
+  const handleSubmit = (): void => {
     toast.success("Answer submitted!");
 
-    setTextAreaValue("");
-    setFinalAnswer(false);
-  };
-
-  const formatTime = (seconds: number) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = Math.floor(seconds % 60);
-    const millisec = Math.floor((seconds - Math.floor(seconds)) * 100);
-
-    if (hrs > 0) {
-      return `${hrs}:${mins < 10 ? "0" : ""}${mins}:${
-        secs < 10 ? "0" : ""
-      }${secs}:${millisec < 10 ? "0" : ""}${millisec}`;
-    } else {
-      return `${mins < 10 ? "0" : ""}${mins}:${secs < 10 ? "0" : ""}${secs}:${
-        millisec < 10 ? "0" : ""
-      }${millisec}`;
-    }
+    setState((prevState) => ({
+      ...prevState,
+      textAreaValue: "",
+      finalAnswer: false,
+    }));
   };
 
   return (
@@ -138,65 +178,31 @@ const App: React.FC = () => {
         SAY THE VOCABULARY WORDS
       </Typography>
 
-      <Grid
-        container
-        direction={{ xs: "column", sm: "row" }}
-        justifyContent="center"
-        alignItems="center"
-        spacing={2}
-        style={{ marginTop: "20px" }}
-      >
-        <Grid item>
-          <Button
-            label="Stop"
-            color="#C62828"
-            bordercolor="#FA8072"
-            isactive={activeButton === "Stop"}
-            variant="contained"
-            symbol={<StopIcon sx={{ fontSize: 30, color: "inherit" }} />}
-            onClick={() => handleButtonClick("Stop")}
-            aria-label="Stop recording"
-          />
-        </Grid>
-        <Grid item>
-          <Button
-            label="Record"
-            color="#009688"
-            bordercolor="#20B2AA"
-            symbol={<CircleIcon sx={{ fontSize: 25, color: "inherit" }} />}
-            isactive={activeButton === "Record"}
-            variant="contained"
-            onClick={() => handleButtonClick("Record")}
-            aria-label="Start recording"
-          />
-        </Grid>
-        <Grid item>
-          <Button
-            label="Review your recording"
-            color="#7B1FA2"
-            bordercolor="#DDA0DD"
-            symbol={<PlayArrowIcon sx={{ fontSize: 30, color: "inherit" }} />}
-            isactive={activeButton === "Review"}
-            variant="contained"
-            onClick={() => handleButtonClick("Review")}
-            aria-label="Review your recording"
-          />
-        </Grid>
-      </Grid>
-
-      <ProgressBar
-        progress={progress}
-        timeRemaining={formatTime(timeRemaining)}
+      <MediaControlButtons
+        activeButton={state.activeButton}
+        onButtonClick={handleButtonClick}
       />
+
+      <MediaProgressBar
+       activeButton={state.activeButton}
+       isPlaying={state.isPlaying}
+       onCompletion={handleProgressCompletion}
+      />
+
       <TextArea
-        value={textAreaValue}
-        onChange={(e) => setTextAreaValue(e.target.value)}
+        value={state.textAreaValue}
+        onChange={(e) =>
+          setState((prevState) => ({
+            ...prevState,
+            textAreaValue: e.target.value,
+          }))
+        }
       />
       <RadioGroupComponent
-        selectedValue={finalAnswer ? "true" : "false"}
+        selectedValue={state.finalAnswer ? "true" : "false"}
         onChange={handleRadioChange}
       />
-      <SubmitButton isEnabled={finalAnswer} onClick={handleSubmit} />
+      <SubmitButton isEnabled={state.finalAnswer} onClick={handleSubmit} />
     </div>
   );
 };

@@ -14,13 +14,9 @@
 
 @media (max-width: 350px) {
   .container {
-    max-width: 100%;
+    max-width: 90%;
     border-radius: 0;
     padding: 20px;
     height: 100vh;
-  }
-
-  img {
-    height: 200px; /* Reduce the height for narrow screens */
   }
 }
